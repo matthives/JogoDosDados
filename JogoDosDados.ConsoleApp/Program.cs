@@ -1,128 +1,205 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿/*
+   Regras do Jogo
+       1. O jogo ocorre em uma pista com um limite de 30 casas.
+       2. O jogador e o computador jogam alternadamente.
+       3. Cada turno, um dado é sorteado (valores entre 1 e 6) para determinar o avanço.
+       4. Eventos especiais ocorrem em determinadas posições:
+           - Avanço extra (+3 casas):
+               - Posições: 5, 10, 15, 25
+
+           - Recuo (-2 casas):
+               - Posições: 7, 13, 20
+
+           - Rodada extra:
+               - Se o competidor tirar 6 no dado, ele ganha uma rodada extra.
+
+       5. O primeiro a alcançar ou ultrapassar a linha de chegada vence.
+*/
 
 using System.Security.Cryptography;
 
-const int limiteLinhaChegada = 30;
-const int bonusAvancoExtra = 3;
-const int penalidadeDeRecuo = 2;
-
-while (true)
+class Program
 {
-    int posicaoJogador = 0;
-    int posicaoComputador = 0;
-
-    while (true)
+    static void Main(string[] args)
     {
-        Console.Clear();
-        Console.WriteLine("----------------------------------");
-        Console.WriteLine("Jogo dos Dados");
-        Console.WriteLine("----------------------------------");
-        Console.WriteLine("Rodada do Jogador");
-        Console.WriteLine("----------------------------------");
+        const int limiteLinhaChegada = 30;
+        const int bonusAvancoExtra = 3;
+        const int penalidadeRecuo = 2;
 
-        Console.Write("Pressione ENTER para lançar o dado...");
-        Console.ReadLine();
-
-        int resultadoJogador = RandomNumberGenerator.GetInt32(1, 7);
-
-        posicaoJogador += resultadoJogador;
-
-        Console.WriteLine("----------------------------------");
-        Console.WriteLine("O número sorteado foi: " + resultadoJogador);
-        Console.WriteLine("----------------------------------");
-
-        Console.WriteLine($"Você está na posição: {posicaoJogador} de {limiteLinhaChegada}");
-
-        if (posicaoJogador == 5 || posicaoJogador == 10 || posicaoJogador == 15 || posicaoJogador == 25)
+        while (true)
         {
+            int posicaoJogador = 0;
+            int posicaoComputador = 0;
 
-            Console.WriteLine($"\nEvento: Avanço de {bonusAvancoExtra} casas!");
+            while (true)
+            {
+                // 1. Rodada do Jogador
+                posicaoJogador = ExecutarRodadaDoJogador(
+                    posicaoJogador,
+                    limiteLinhaChegada,
+                    bonusAvancoExtra,
+                    penalidadeRecuo
+                );
 
-            posicaoJogador += bonusAvancoExtra;
+                // 2. Check de vitória do Jogador
+                ApresentarMensagemDoJogador(posicaoJogador, limiteLinhaChegada);
 
-            Console.WriteLine($"\nVocê está na posição: {posicaoJogador} de {limiteLinhaChegada}.");
-        }
+                if (posicaoJogador >= limiteLinhaChegada)
+                    break;
 
-        else if (posicaoJogador == 7 || posicaoJogador == 13 || posicaoJogador == 20)
-        {
+                // 3. Rodada do Computador
+                posicaoComputador = ExecutarRodadaDoComputador(
+                    posicaoComputador,
+                    limiteLinhaChegada,
+                    bonusAvancoExtra,
+                    penalidadeRecuo
+                );
 
-            Console.WriteLine($"\nEvento: Recuo de {penalidadeDeRecuo} casas!");
+                // 4. Check de vitória do Computador
+                ApresentarMensagemDoComputador(posicaoComputador, limiteLinhaChegada);
 
-            posicaoJogador -= penalidadeDeRecuo;
+                if (posicaoComputador >= limiteLinhaChegada)
+                    break;
+            }
 
-            Console.WriteLine($"\nVocê está na posição: {posicaoJogador} de {limiteLinhaChegada}.");
-        }
-
-        if (posicaoJogador >= limiteLinhaChegada)
-        {
-            Console.WriteLine($"Parabéns! Você alcanou a linha de chegada.");
-            Console.WriteLine("----------------------------------");
-            Console.WriteLine("Pressione ENTER para contiuar");
-            Console.ReadLine();
-
-            break;
-        }
-
-        Console.WriteLine("--------------------------------------");
-        Console.Write("Pressione ENTER para continuar...");
-        Console.ReadLine();
-
-        Console.Clear();
-        Console.WriteLine("--------------------------------------");
-        Console.WriteLine("Jogo dos Dados");
-        Console.WriteLine("--------------------------------------");
-        Console.WriteLine("Rodada do Computador");
-
-        int resultadoComputador = RandomNumberGenerator.GetInt32(1, 7);
-
-        posicaoComputador += resultadoComputador;
-
-        Thread.Sleep(1000);
-
-        Console.WriteLine("--------------------------------------");
-        Console.WriteLine("O número sorteado foi: " + resultadoComputador);
-        Console.WriteLine("--------------------------------------");
-
-        Console.WriteLine($"O computador está na posição: {posicaoComputador} de {limiteLinhaChegada}.");
-
-        if (posicaoComputador == 5 || posicaoComputador == 10 || posicaoComputador == 15 || posicaoComputador == 25)
-        {
-            Console.WriteLine($"\nEvento: Avanço de {bonusAvancoExtra} casas!");
-
-            posicaoComputador += bonusAvancoExtra;
-
-            Console.WriteLine($"\nO computador está na posição: {posicaoComputador} de {limiteLinhaChegada}.");
-        }
-
-        else if (posicaoComputador == 7 || posicaoComputador == 13 || posicaoComputador == 20)
-        {
-            Console.WriteLine($"\nEvento: Recuo de {penalidadeDeRecuo} casas!");
-
-            posicaoComputador -= penalidadeDeRecuo;
-
-            Console.WriteLine($"\nO computador está na posição: {posicaoComputador} de {limiteLinhaChegada}.");
-        }
-
-        if (posicaoComputador >= limiteLinhaChegada)
-        {
-            Console.WriteLine($"Que pena! O computador alcançou a linha de chegada.");
             Console.WriteLine("--------------------------------------");
-            Console.Write("Pressione ENTER para continuar...");
+            Console.Write("Deseja continuar? (s/N): ");
+            string? opcaoContinuar = Console.ReadLine()?.ToUpper();
+
+            if (opcaoContinuar != "S")
+                break;
+        }
+        static int ExecutarRodadaDoJogador
+        (
+            int posicaoJogador,
+            int limiteLinhaChegada,
+            int bonusAvancoExtra,
+            int penalidadeRecuo
+        )
+        {
+            Console.Clear();
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine("Jogo dos Dados");
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine("Rodada do Jogador");
+            Console.WriteLine("----------------------------------");
+
+            Console.Write("Pressione ENTER para lançar o dado...");
             Console.ReadLine();
 
-            break;
+            int resultadoJogador = RandomNumberGenerator.GetInt32(1, 7);
+
+            posicaoJogador += resultadoJogador;
+
+            Console.WriteLine("----------------------------------");
+            Console.WriteLine("O número sorteado foi: " + resultadoJogador);
+            Console.WriteLine("----------------------------------");
+
+            Console.WriteLine($"Você está na posição: {posicaoJogador} de {limiteLinhaChegada}");
+
+            if (posicaoJogador == 5 || posicaoJogador == 10 || posicaoJogador == 15 || posicaoJogador == 25)
+            {
+                Console.WriteLine($"\nEvento: Avanço de {bonusAvancoExtra} casas!");
+
+                posicaoJogador += bonusAvancoExtra;
+
+                Console.WriteLine($"\nVocê está na posição: {posicaoJogador} de {limiteLinhaChegada}.");
+            }
+
+            else if (posicaoJogador == 7 || posicaoJogador == 13 || posicaoJogador == 20)
+            {
+                Console.WriteLine($"\nEvento: Recuo de {penalidadeRecuo} casas!");
+
+                posicaoJogador -= penalidadeRecuo;
+
+                Console.WriteLine($"\nVocê está na posição: {posicaoJogador} de {limiteLinhaChegada}.");
+            }
+
+            return posicaoJogador;
         }
 
-        Console.WriteLine("--------------------------------------");
-        Console.Write("Pressione ENTER para continuar...");
-        Console.ReadLine();
+        static void ApresentarMensagemDoJogador(int posicaoJogador, int limiteLinhaChegada)
+        {
+            if (posicaoJogador >= limiteLinhaChegada)
+            {
+                Console.WriteLine($"Parabéns! Você alcanou a linha de chegada.");
+                Console.WriteLine("----------------------------------");
+                Console.WriteLine("Pressione ENTER para contiuar");
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("----------------------------------");
+                Console.Write("Pressione ENTER para contiuar");
+                Console.ReadLine();
+            }
+        }
+
+        static int ExecutarRodadaDoComputador
+        (
+            int posicaoComputador,
+            int limiteLinhaChegada,
+            int bonusAvancoExtra,
+            int penalidadeRecuo
+        )
+        {
+            Console.Clear();
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("Jogo dos Dados");
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("Rodada do Computador");
+
+            int resultadoComputador = RandomNumberGenerator.GetInt32(1, 7);
+
+            posicaoComputador += resultadoComputador;
+
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("O número sorteado foi: " + resultadoComputador);
+            Console.WriteLine("--------------------------------------");
+
+            Console.WriteLine($"O computador está na posição: {posicaoComputador} de {limiteLinhaChegada}.");
+
+            if (posicaoComputador == 5 || posicaoComputador == 10 || posicaoComputador == 15 || posicaoComputador == 25)
+            {
+                Console.WriteLine($"\nEvento: Avanço de {bonusAvancoExtra} casas!");
+
+                posicaoComputador += bonusAvancoExtra;
+
+                Console.WriteLine($"\nO computador está na posição: {posicaoComputador} de {limiteLinhaChegada}.");
+            }
+
+            else if (posicaoComputador == 7 || posicaoComputador == 13 || posicaoComputador == 20)
+            {
+                Console.WriteLine($"\nEvento: Recuo de {penalidadeRecuo} casas!");
+
+                posicaoComputador -= penalidadeRecuo;
+
+                Console.WriteLine($"\nO computador está na posição: {posicaoComputador} de {limiteLinhaChegada}.");
+            }
+
+            return posicaoComputador;
+        }
+        static void ApresentarMensagemDoComputador(int posicaoComputador, int limiteLinhaChegada)
+        {
+            if (posicaoComputador >= limiteLinhaChegada)
+            {
+                Console.WriteLine($"Que pena! O computador alcançou a linha de chegada.");
+                Console.WriteLine("--------------------------------------");
+                Console.Write("Pressione ENTER para continuar...");
+                Console.ReadLine();
+            }
+            else
+            {
+                Console.WriteLine("--------------------------------------");
+                Console.Write("Pressione ENTER para continuar...");
+                Console.ReadLine();
+            }
+
+            
+        }
+
     }
-
-    Console.Write("Deseja continuar? (s/N): ");
-    string? opcaoContinuar = Console.ReadLine()?.ToUpper();
-
-    if (opcaoContinuar != "S")
-        break;
 }
+
 
 
