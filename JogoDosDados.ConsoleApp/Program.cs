@@ -15,9 +15,9 @@
 
        5. O primeiro a alcançar ou ultrapassar a linha de chegada vence.
 */
+namespace JogoDosDados.ConsoleApp;
 
 using System.Security.Cryptography;
-
 class Program
 {
     static void Main(string[] args)
@@ -34,7 +34,7 @@ class Program
             while (true)
             {
                 // 1. Rodada do Jogador
-                posicaoJogador = ExecutarRodadaDoJogador(
+                posicaoJogador = Jogador.ExecutarRodada(
                     posicaoJogador,
                     limiteLinhaChegada,
                     bonusAvancoExtra,
@@ -69,71 +69,7 @@ class Program
             if (opcaoContinuar != "S")
                 break;
         }
-        static int ExecutarRodadaDoJogador
-        (
-            int posicaoJogador,
-            int limiteLinhaChegada,
-            int bonusAvancoExtra,
-            int penalidadeRecuo
-        )
-        {
-            Console.Clear();
-            Console.WriteLine("----------------------------------");
-            Console.WriteLine("Jogo dos Dados");
-            Console.WriteLine("----------------------------------");
-            Console.WriteLine("Rodada do Jogador");
-            Console.WriteLine("----------------------------------");
 
-            Console.Write("Pressione ENTER para lançar o dado...");
-            Console.ReadLine();
-
-            int resultadoJogador = RandomNumberGenerator.GetInt32(1, 7);
-
-            posicaoJogador += resultadoJogador;
-
-            Console.WriteLine("----------------------------------");
-            Console.WriteLine("O número sorteado foi: " + resultadoJogador);
-            Console.WriteLine("----------------------------------");
-
-            Console.WriteLine($"Você está na posição: {posicaoJogador} de {limiteLinhaChegada}");
-
-            if (posicaoJogador == 5 || posicaoJogador == 10 || posicaoJogador == 15 || posicaoJogador == 25)
-            {
-                Console.WriteLine($"\nEvento: Avanço de {bonusAvancoExtra} casas!");
-
-                posicaoJogador += bonusAvancoExtra;
-
-                Console.WriteLine($"\nVocê está na posição: {posicaoJogador} de {limiteLinhaChegada}.");
-            }
-
-            else if (posicaoJogador == 7 || posicaoJogador == 13 || posicaoJogador == 20)
-            {
-                Console.WriteLine($"\nEvento: Recuo de {penalidadeRecuo} casas!");
-
-                posicaoJogador -= penalidadeRecuo;
-
-                Console.WriteLine($"\nVocê está na posição: {posicaoJogador} de {limiteLinhaChegada}.");
-            }
-
-            return posicaoJogador;
-        }
-
-        static void ApresentarMensagemDoJogador(int posicaoJogador, int limiteLinhaChegada)
-        {
-            if (posicaoJogador >= limiteLinhaChegada)
-            {
-                Console.WriteLine($"Parabéns! Você alcanou a linha de chegada.");
-                Console.WriteLine("----------------------------------");
-                Console.WriteLine("Pressione ENTER para contiuar");
-                Console.ReadLine();
-            }
-            else
-            {
-                Console.WriteLine("----------------------------------");
-                Console.Write("Pressione ENTER para contiuar");
-                Console.ReadLine();
-            }
-        }
 
         static int ExecutarRodadaDoComputador
         (
@@ -195,7 +131,7 @@ class Program
                 Console.ReadLine();
             }
 
-            
+
         }
 
     }
