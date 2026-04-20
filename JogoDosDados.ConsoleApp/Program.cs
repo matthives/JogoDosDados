@@ -23,26 +23,16 @@ class Program
 {
     static void Main(string[] args)
     {
-        const int limiteLinhaChegada = 30;
-        const int bonusAvancoExtra = 3;
-        const int penalidadeRecuo = 2;
-
         while (true)
         {
-            int posicaoJogador = 0;
             int posicaoComputador = 0;
 
             while (true)
             {
                 // 1. Rodada do Jogador
-                posicaoJogador = Jogador.ExecutarRodada(
-                    posicaoJogador,
-                    limiteLinhaChegada,
-                    bonusAvancoExtra,
-                    penalidadeRecuo
-                );
+                Jogador.ExecutarRodada();
 
-                if (posicaoJogador >= limiteLinhaChegada)
+                if (Jogador.VenceuPartida())
                     break;
 
                 // 2. Rodada do Computador
