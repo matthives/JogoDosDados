@@ -2,7 +2,7 @@ namespace JogoDosDados.ConsoleApp.Entidades;
 
 using System.Security.Cryptography;
 
-class Jogador
+public class Jogador
 {
     public static int ExecutarRodada
     (
