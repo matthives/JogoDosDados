@@ -1,4 +1,4 @@
-namespace JogoDosDados.ConsoleApp;
+namespace JogoDosDados.ConsoleApp.Entidades;
 
 using System.Security.Cryptography;
 
